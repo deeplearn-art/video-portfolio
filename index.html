@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Johannezz's Videos</h1>
+            <nav class="nav">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#videos" class="nav-link">Videos</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2 class="hero-title">Welcome to My Video Portfolio</h2>
+                    <p class="hero-description"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="videos" class="videos-section">
+            <div class="container">
+                <h2 class="section-title">Featured Videos</h2>
+                <div class="video-grid" id="videoGrid">
+                    <!-- Videos will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div class="about-content">
+                    <p>I'm a traditionally trained animator who is now using AI to create videos.</p>
+                    <p>My objective is to instill life into the characters so that they are more than just a collection of frames.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="contact-content">
+                    <p>Interested in collaborating or have a project in mind? I'd love to hear from you!</p>
+                    <div class="contact-info">
+                        <a href="mailto:johannezz.music@gmail.com" class="contact-link">johannezz.music@gmail.com</a>
+                        <div class="social-links">
+                            <a href="https://x.com/_johannezz" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                                <span class="social-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" focusable="false">
+                                        <path d="M18.244 2H21.5l-7.286 8.34L22.5 22h-6.91l-5.41-6.98L3.756 22H.5l7.803-8.925L1 2h6.91l5.084 6.556L18.244 2zm-2.42 18h2.24L7.26 4h-2.3l10.864 16z"></path>
+                                    </svg>
+                                </span>
+                                <span>X</span>
+                            </a>
+                            <a href="https://www.youtube.com/@johannezz" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                                <span class="social-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" focusable="false">
+                                        <path d="M23.5 6.2a4 4 0 0 0-2.8-2.8C18.7 3 12 3 12 3s-6.7 0-8.7.4A4 4 0 0 0 .5 6.2 41.7 41.7 0 0 0 0 12a41.7 41.7 0 0 0 .5 5.8 4 4 0 0 0 2.8 2.8C5.3 21 12 21 12 21s6.7 0 8.7-.4a4 4 0 0 0 2.8-2.8A41.7 41.7 0 0 0 24 12a41.7 41.7 0 0 0-.5-5.8zM9.75 15.5v-7l6 3.5-6 3.5z"></path>
+                                    </svg>
+                                </span>
+                                <span>YouTube</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Johannezz. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
