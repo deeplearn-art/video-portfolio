@@ -7,6 +7,19 @@ const navLinks = document.querySelectorAll('.nav-link');
 
 // Load video data from JSON file
 async function loadVideoData() {
+    // Check if running from file:// protocol
+    if (window.location.protocol === 'file:') {
+        showErrorMessage(
+            'CORS Error: This page must be served from a web server.<br><br>' +
+            '<strong>Quick Solutions:</strong><br>' +
+            '1. Use Python: <code>python -m http.server 8000</code> then open <code>http://localhost:8000</code><br>' +
+            '2. Use Node.js: <code>npx http-server</code> then open the provided URL<br>' +
+            '3. Use VS Code: Install "Live Server" extension and click "Go Live"<br><br>' +
+            'Or use the included <code>start-server.bat</code> file.'
+        );
+        return [];
+    }
+    
     try {
         const response = await fetch('videodata.json');
         if (!response.ok) {
@@ -25,9 +38,11 @@ async function loadVideoData() {
 function showErrorMessage(message) {
     if (videoGrid) {
         videoGrid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-tertiary);">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-tertiary); max-width: 800px; margin: 0 auto;">
                 <h3 style="color: var(--text-dark); margin-bottom: 1rem;">Error Loading Videos</h3>
-                <p>${message}</p>
+                <div style="text-align: left; background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; border: 2px solid var(--border-light);">
+                    ${message}
+                </div>
             </div>
         `;
     }
@@ -42,11 +57,43 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Load video data first, then display videos
     await loadVideoData();
-    loadVideos();
+    
+    // Check if we're on the videos page (all videos) or home page (featured)
+    const isVideosPage = window.location.pathname.includes('videos.html') || 
+                         window.location.pathname.endsWith('videos.html');
+    
+    if (isVideosPage) {
+        loadAllVideos();
+    } else {
+        loadVideos(); // Featured videos (top 3)
+    }
 });
 
-// Load and display videos
+// Load and display videos (featured - top 3 by ID)
 function loadVideos() {
+    if (videoData.length === 0) {
+        showNoVideosMessage();
+        return;
+    }
+
+    // Sort by ID descending (highest first) and get top 3
+    const sortedVideos = [...videoData].sort((a, b) => {
+        const idA = Number(a.id);
+        const idB = Number(b.id);
+        return idB - idA; // Descending order
+    });
+    const featuredVideos = sortedVideos.slice(0, 3);
+
+    videoGrid.innerHTML = '';
+    
+    featuredVideos.forEach(video => {
+        const videoCard = createVideoCard(video);
+        videoGrid.appendChild(videoCard);
+    });
+}
+
+// Load and display all videos (for videos page)
+function loadAllVideos() {
     if (videoData.length === 0) {
         showNoVideosMessage();
         return;
@@ -54,7 +101,14 @@ function loadVideos() {
 
     videoGrid.innerHTML = '';
     
-    videoData.forEach(video => {
+    // Sort by ID descending (highest first)
+    const sortedVideos = [...videoData].sort((a, b) => {
+        const idA = Number(a.id);
+        const idB = Number(b.id);
+        return idB - idA; // Descending order
+    });
+    
+    sortedVideos.forEach(video => {
         const videoCard = createVideoCard(video);
         videoGrid.appendChild(videoCard);
     });
@@ -134,6 +188,13 @@ function showNoVideosMessage() {
 function setupNavigation() {
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            
+            // Allow normal navigation for external links (not starting with #)
+            if (href && !href.startsWith('#')) {
+                return; // Let the browser handle the navigation
+            }
+            
             e.preventDefault();
             
             // Remove active class from all links
@@ -143,7 +204,7 @@ function setupNavigation() {
             this.classList.add('active');
             
             // Get target section
-            const targetId = this.getAttribute('href').substring(1);
+            const targetId = href.substring(1);
             const targetSection = document.getElementById(targetId);
             
             if (targetSection) {
@@ -177,26 +238,29 @@ function setupSmoothScrolling() {
     });
 }
 
-// Update active navigation link based on scroll position
-window.addEventListener('scroll', function() {
-    const sections = document.querySelectorAll('section[id]');
-    const scrollPos = window.scrollY + 100;
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
-        const sectionId = section.getAttribute('id');
+// Update active navigation link based on scroll position (only on index.html)
+if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('section[id]');
+        const scrollPos = window.scrollY + 100;
         
-        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
-        }
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            
+            if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    const href = link.getAttribute('href');
+                    if (href === `#${sectionId}` || (href === 'index.html' && sectionId === 'home')) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
     });
-});
+}
 
 // Add loading animation for videos
 function showLoadingState() {
@@ -330,7 +394,7 @@ function setTheme(theme) {
 }
 
 function getThemePreference() {
-    return localStorage.getItem('theme') || 'light';
+    return localStorage.getItem('theme') || 'dark';
 }
 
 function saveThemePreference(theme) {
