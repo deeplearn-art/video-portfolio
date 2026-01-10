@@ -58,26 +58,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load video data first, then display videos
     await loadVideoData();
     
-    // Check if we're on the videos page (all videos) or home page (featured)
+    // Check which page we're on and load appropriate content
     const isVideosPage = window.location.pathname.includes('videos.html') || 
                          window.location.pathname.endsWith('videos.html');
+    const isShortsPage = window.location.pathname.includes('shorts.html') || 
+                         window.location.pathname.endsWith('shorts.html');
     
     if (isVideosPage) {
         loadAllVideos();
+    } else if (isShortsPage) {
+        loadAllShorts();
     } else {
+        // Home page - load featured videos and shorts
         loadVideos(); // Featured videos (top 3)
+        loadShorts(); // Featured shorts (top 3)
     }
 });
 
-// Load and display videos (featured - top 3 by ID)
+// Load and display videos (featured - top 3 by ID, type: "video")
 function loadVideos() {
-    if (videoData.length === 0) {
+    // Filter by type "video"
+    const videos = videoData.filter(item => item.type === 'video');
+    
+    if (videos.length === 0) {
         showNoVideosMessage();
         return;
     }
 
     // Sort by ID descending (highest first) and get top 3
-    const sortedVideos = [...videoData].sort((a, b) => {
+    const sortedVideos = [...videos].sort((a, b) => {
         const idA = Number(a.id);
         const idB = Number(b.id);
         return idB - idA; // Descending order
@@ -90,11 +99,63 @@ function loadVideos() {
         const videoCard = createVideoCard(video);
         videoGrid.appendChild(videoCard);
     });
+    
+    // Add "More videos" link if there are more than 3 videos
+    if (sortedVideos.length > 3) {
+        const moreLink = document.createElement('a');
+        moreLink.href = 'videos.html';
+        moreLink.textContent = 'More videos';
+        moreLink.className = 'more-videos-link';
+        moreLink.style.cssText = 'grid-column: 1 / -1; text-align: center; margin-top: 2rem; color: var(--text-primary, #ffffff); text-decoration: underline; font-size: 1rem;';
+        videoGrid.appendChild(moreLink);
+    }
 }
 
-// Load and display all videos (for videos page)
+// Load and display shorts (featured - top 3 by ID, type: "short")
+function loadShorts() {
+    // Filter by type "short"
+    const shorts = videoData.filter(item => item.type === 'short');
+    
+    if (shorts.length === 0) {
+        showNoShortsMessage();
+        return;
+    }
+
+    // Sort by ID descending (highest first) and get top 3
+    const sortedShorts = [...shorts].sort((a, b) => {
+        const idA = Number(a.id);
+        const idB = Number(b.id);
+        return idB - idA; // Descending order
+    });
+    const featuredShorts = sortedShorts.slice(0, 3);
+
+    const shortsGrid = document.getElementById('shortsGrid');
+    if (!shortsGrid) return;
+    
+    shortsGrid.innerHTML = '';
+    
+    featuredShorts.forEach(short => {
+        const videoCard = createVideoCard(short);
+        shortsGrid.appendChild(videoCard);
+    });
+    
+    // Add "More shorts" link if there are more than 3 shorts
+    if (sortedShorts.length > 3) {
+        const moreLink = document.createElement('a');
+        moreLink.href = 'shorts.html';
+        moreLink.textContent = 'More shorts';
+        moreLink.className = 'more-shorts-link';
+        moreLink.style.cssText = 'grid-column: 1 / -1; text-align: center; margin-top: 2rem; color: var(--text-primary, #ffffff); text-decoration: underline; font-size: 1rem;';
+        shortsGrid.appendChild(moreLink);
+    }
+}
+
+// Load and display all videos (for videos page, type: "video")
 function loadAllVideos() {
-    if (videoData.length === 0) {
+    // Filter by type "video"
+    const videos = videoData.filter(item => item.type === 'video');
+    
+    if (videos.length === 0) {
         showNoVideosMessage();
         return;
     }
@@ -102,7 +163,7 @@ function loadAllVideos() {
     videoGrid.innerHTML = '';
     
     // Sort by ID descending (highest first)
-    const sortedVideos = [...videoData].sort((a, b) => {
+    const sortedVideos = [...videos].sort((a, b) => {
         const idA = Number(a.id);
         const idB = Number(b.id);
         return idB - idA; // Descending order
@@ -110,6 +171,31 @@ function loadAllVideos() {
     
     sortedVideos.forEach(video => {
         const videoCard = createVideoCard(video);
+        videoGrid.appendChild(videoCard);
+    });
+}
+
+// Load and display all shorts (for shorts page, type: "short")
+function loadAllShorts() {
+    // Filter by type "short"
+    const shorts = videoData.filter(item => item.type === 'short');
+    
+    if (shorts.length === 0) {
+        showNoShortsMessage();
+        return;
+    }
+
+    videoGrid.innerHTML = '';
+    
+    // Sort by ID descending (highest first)
+    const sortedShorts = [...shorts].sort((a, b) => {
+        const idA = Number(a.id);
+        const idB = Number(b.id);
+        return idB - idA; // Descending order
+    });
+    
+    sortedShorts.forEach(short => {
+        const videoCard = createVideoCard(short);
         videoGrid.appendChild(videoCard);
     });
 }
@@ -176,12 +262,27 @@ function createVideoCard(video) {
 
 // Show message when no videos are available
 function showNoVideosMessage() {
-    videoGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-tertiary);">
-            <h3 style="color: var(--text-dark); margin-bottom: 1rem;">No videos available</h3>
-            <p>Please add your Streamable video IDs to videodata.json</p>
-        </div>
-    `;
+    if (videoGrid) {
+        videoGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-tertiary);">
+                <h3 style="color: var(--text-dark); margin-bottom: 1rem;">No videos available</h3>
+                <p>Please add your Streamable video IDs to videodata.json</p>
+            </div>
+        `;
+    }
+}
+
+// Show message when no shorts are available
+function showNoShortsMessage() {
+    const shortsGrid = document.getElementById('shortsGrid');
+    if (shortsGrid) {
+        shortsGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-tertiary);">
+                <h3 style="color: var(--text-dark); margin-bottom: 1rem;">No shorts available</h3>
+                <p>Please add your Streamable video IDs to videodata.json</p>
+            </div>
+        `;
+    }
 }
 
 // Setup navigation functionality
