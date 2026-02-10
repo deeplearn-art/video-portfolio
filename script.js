@@ -39,7 +39,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupSmoothScrolling();
     setupThemeToggle();
     loadThemePreference();
-    
+    setCurrentYear();
+
     // Load video data first, then display videos
     await loadVideoData();
     loadVideos();
@@ -340,6 +341,14 @@ function saveThemePreference(theme) {
 function loadThemePreference() {
     const savedTheme = getThemePreference();
     setTheme(savedTheme);
+}
+
+// Set current year in footer
+function setCurrentYear() {
+    const yearElement = document.getElementById('currentYear');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
 }
 
 // Console helper functions for easy video management
